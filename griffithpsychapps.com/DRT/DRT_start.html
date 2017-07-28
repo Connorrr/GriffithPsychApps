@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+    
+    <head>
+        <title>jspsych-xab plugin example</title>
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <!-- jsPsych -->
+        <script src="jspsych.js"></script>
+        <script src="plugins/jspsych-xyzab.js"></script>
+		<script src="plugins/jspsych-text.js"></script>
+        <!-- style -->
+		<!-- Dropbox -->
+		<script src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js"></script>
+        <style>
+            #jspsych_target {
+                margin: 50px auto 50px auto;
+                width: 600px;
+                text-align: center;
+				font-size: 27px;
+            }
+            #instructions {
+                text-align: center;
+				font-size: 27px;
+            }
+            pre {
+                text-align: center;
+				font-size: 27px;
+            }
+            img {
+                width: 150px;
+                margin: 30px;
+            }
+			#container {
+				width: 1200px;
+				display: block;
+				margin-left: auto;
+				margin-right: auto;
+				font-size: 27px;
+			}
+			#left_div {
+				float: left;
+				width: 15%;
+				margin-right: 15px;
+				font-size: 27px;
+			}
+			#center_div {
+				float: left;
+				width: 60%;
+				padding: 30px;
+				margin: 20px;
+				text-align: center;
+				font-size: 27px;
+			}
+			#right_div {
+				float: left;
+				width: 15%;
+				font-size: 27px;
+			}
+        </style>
+    </head>
+    
+    <body>
+		<div id="container"><br><br><br><br>
+			<!-- <table align="center" id="jspsych_target_table" style="width:800px"><br><br><br><br><br><br><br><br><br><br><br><br><br></table> -->
+			<div id="left_div"><img border="0" src="img/l.jpg" alt="Missing Image" width="304" height="228"></div>
+			<div id="center_div"></div>
+			<div id="right_div"><img border="0" src="img/r.jpg" alt="Missing Image" width="304" height="228"></div>
+		</div>
+    </body>
+    <script type="text/javascript">
+		
+		var instructions = '<div id="instructions">Next you will complete a task that will require you to choose between two monetary rewards; \
+		one reward that you will recieve immediately and one that will be recieved at a later date.  This <br>\
+		is a hypothetical task however please think about which reward (immediate vs delayed reward) you would choose \
+		as if you would be recieving these rewards.<br><br>\
+		The first slide will include the immediate amount, followed by the time delay (eg. 1 week), and the amount of the delayed reward.\
+		The final slide will feature both amounts and you will be required to select one.<br>\
+		Use the &lsquo;Z&rsquo; Key to select the immediate reward or the &lsquo;/&rsquo; Key to select the delayed.\
+		<br><br>Press Enter to Begin!</div>';
+		
+		var subId = getParameterByName('subid');
+		var uCode = getParameterByName('ucode');
+		
+		var goodbye = '<div id="goodbye">Thank you for completing the hypothetical monetary rewards task! \
+		Please click on the following link to complete the next survey.\
+		<a href="https://qtrial2014.az1.qualtrics.com/SE/?SID=SV_9tqwKrbKnU2VwQ5" target="_blank"><br><br>Back to Survey!</a> </div>'
+		
+        // how many trials?
+        var n_trials = 23;
+
+        // declare an array to hold the stimuli
+        var stimuli = [];
+		var imm_stimuli = [1000, 990, 960, 920, 850, 800, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300, 250, 200, 150, 100,  50,  20,  10];	//Array of size 23 containing all immediate stimulus numbers
+		var html_stimuli = ["in 1 week", "in 2 weeks", "in 1 month", "in 6 months", "in 1 year", "in 3 years", "in 10 years"];		//Array size 7 with 'y' stimuli
+		var imgs = [];
+		
+		imgs.push("img/l.jpg");		//Add images to array
+		imgs.push("img/r.jpg");
+		
+        for (var i = 0; i < n_trials; i++) {
+            // randomly choose the two stimuli we will show to subject
+			var rnd = Math.floor(Math.random() * html_stimuli.length);
+			for (var j = 0; j < html_stimuli.length; j++){
+				var first_stim = "$" + imm_stimuli[i];
+				var second_stim = "$1000";
+				var third_stim = html_stimuli[j];
+				// add the pair
+				stimuli.push([first_stim, second_stim, third_stim]);
+			}
+        }
+		
+		stimuli = shuffle(stimuli);
+		
+		function shuffle(array) {
+			  var m = array.length, t, i;
+
+			  // While there remain elements to shuffle…
+			  while (m) {
+
+				// Pick a remaining element…
+				i = Math.floor(Math.random() * m--);
+
+				// And swap it with the current element.
+				t = array[m];
+				array[m] = array[i];
+				array[i] = t;
+			  }
+
+			  return array;
+		}
+		
+		console.log("stimuli: " + stimuli.length);
+
+        // create free-sort block for jspsych
+        var xyzab_block = {
+            type: 'xyzab',
+            stimuli: stimuli,
+            prompt: "<p>Would you like to receive the reward immediately or at a later date?</p>",
+			is_html: true,
+			left_key: 90,
+			right_key: 191,
+			subid: subId,
+			ucode: uCode
+        };
+		
+		var instructions_block = {
+			type: "text",
+			text: [instructions],
+			timing_post_trial: 750
+		};
+		
+		function getParameterByName(name) {		//Get url parameters
+			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+				results = regex.exec(location.search);
+			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+		
+		dropText = '';
+		
+        // preload images
+        // call start() when loading is complete
+        jsPsych.preloadImages(imgs, start);
+		
+        // launch jspsych experiment
+        function start() {
+            jsPsych.init({
+                display_element: $('#center_div'),
+                experiment_structure: [instructions_block, xyzab_block],
+                on_finish: function(data) {
+                    $('#center_div').append($("<p>", {
+                        html: goodbye
+                    }));
+					dropText = jsPsych.dataAsCSV();
+					var client = new Dropbox.Client({ 
+						key: "8bjveoj43jae04p",
+						secret: "ir0xw6b04wybbw6",
+						token: "7jUgzVPs3qEAAAAAAAAAJyFfNkVuxViLzS5qAhISDnnabmpzQEFuZlOWcMBhE2kq"
+					});
+            		var options = {
+            			noOverwrite: true
+            		};
+                    function doDropFile() {
+                        client.writeFile('DelayedReward.csv', dropText, options, function (error) {
+                        });
+                    }
+            
+                    // Try to complete OAuth flow.
+                    client.authenticate({ interactive: false }, function (error, client) {
+                    });
+            
+                    if (client.isAuthenticated()) {
+                        doDropFile();
+                    }
+                }
+            });
+        }
+    </script>
+
+</html>

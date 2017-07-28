@@ -1,0 +1,50 @@
+<!-- Replace your-device-ID-goes-here with your actual device ID
+and replace your-access-token-goes-here with your actual access token-->
+<!DOCTYPE>
+<html>
+  <body>
+  <center>
+  <br>
+  <br>
+  <br>
+  <form action="https://api.particle.io/v1/devices/2e0021000e47343432313031/alarm?access_token=f3c414183340542034c98fe5f0bd8b985e433922" method="POST" id="alarmForm">
+    Tell your device what to do!<br>
+    <br>
+    <input type="radio" name="arg" value="on" id="turnOn">Turn the LED on.
+    <br>
+    <input type="radio" name="arg" value="off" id="turnOff">Turn the LED off.
+    <br>
+    <input type="radio" name="arg" value="brew" id="brewUp">Brew that Coffee up
+    <br>
+    <br>
+    <input type="submit" value="Do it!">
+  </form>
+  
+  <script>
+  
+  function getParameterByName(name) {		//Get url parameters
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+		return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+	
+	var trig = getParameterByName('trig');
+	
+	if (trig == "on") {
+		console.log("on");
+		document.getElementById("turnOn").checked = true;
+	}else if(trig == "off") {
+		console.log("off");
+		document.getElementById("turnOff").checked = true;
+	}else if(trig == "brew"){
+		console.log("Brew")
+		document.getElementById("brewUp").checked = true;
+	}
+	
+  	document.getElementById("alarmForm").submit();
+  </script>
+  
+  </center>
+  </body>
+</html>

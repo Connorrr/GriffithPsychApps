@@ -1,0 +1,63 @@
+<!-- Replace your-device-ID-goes-here with your actual device ID
+and replace your-access-token-goes-here with your actual access token-->
+<!DOCTYPE>
+<html>
+  <body>
+  <center>
+  <script>
+  
+  	function getParameterByName(name) {		//Get url parameters
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+		return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
+	
+	
+	function post(path, params, method) {
+    	method = method || "POST"; // Set method to post by default if not specified.
+
+	    // The rest of this code assumes you are not using a library.
+    	// It can be made less wordy if you use one.
+    	var form = document.createElement("form");
+    	form.setAttribute("method", method);
+    	form.setAttribute("action", path);
+
+    	/*for(var key in params) {
+        	if(params.hasOwnProperty(key)) {
+            	var hiddenField = document.createElement("input");
+            	hiddenField.setAttribute("type", "hidden");
+            	hiddenField.setAttribute("name", "arg");
+            	hiddenField.setAttribute("value", params[key]);
+
+            	form.appendChild(hiddenField);
+         	}
+    	}*/
+    	var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "radio");
+        hiddenField.setAttribute("name", "arg");
+        hiddenField.setAttribute("value", "on");
+
+    	form.appendChild(hiddenField);
+    	
+    	console.log(form);
+
+    	document.body.appendChild(form);
+    	form.submit();
+	}
+	
+	/* Get subject ID from index */
+	var trig = getParameterByName('trig');
+	console.log(trig)
+	
+	post("https://api.particle.io/v1/devices/2e0021000e47343432313031/alarm?access_token=f3c414183340542034c98fe5f0bd8b985e433922", "on");
+	
+	
+	
+  </script>
+  <br>
+  <br>
+  <br>
+  </center>
+  </body>
+</html>
